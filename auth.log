@@ -1,0 +1,7 @@
+2026-07-14 09:12:01 sshd: Failed password for admin from 192.168.1.50 port 51422
+2026-07-14 09:12:03 sshd: Failed password for root from 192.168.1.50 port 51423
+2026-07-14 09:13:10 sshd: Accepted password for eric from 10.0.0.5 port 51500
+2026-07-14 09:14:22 sshd: Failed password for admin from 45.33.12.9 port 51600
+2026-07-14 09:15:01 sshd: Failed password for root from 45.33.12.9 port 51601
+2026-07-14 09:15:45 sshd: Failed password for test from 45.33.12.9 port 51602
+2026-07-14 09:16:00 sshd: Accepted password for eric from 10.0.0.5 port 51700
