@@ -1,4 +1,4 @@
-# Failed Login Log Parser
+# Failed Login Log Parser with Python
 
 A small Python tool that scans an authentication log for failed SSH login attempts and tallies them by source IP address — a simplified version of the kind of triage a SOC analyst does when scanning auth logs for brute-force activity.
 
