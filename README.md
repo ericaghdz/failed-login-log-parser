@@ -1,4 +1,4 @@
-# Failed Login Log Parser with Python
+# Failed Login Log Parser
 
 A small Python tool that scans an authentication log for failed SSH login attempts and tallies them by source IP address — a simplified version of the kind of triage a SOC analyst does when scanning auth logs for brute-force activity.
 
@@ -12,10 +12,12 @@ Given a log file like:
 2026-07-14 09:13:10 sshd: Accepted password for eric from 10.0.0.5 port 51500
 ```
 
-The script identifies every line containing a failed login, extracts the source IP, and returns a count of failed attempts per IP:
+The script identifies every line containing a failed login, extracts the source IP, tallies attempts per IP, and prints a ranked summary from most to least active offender:
 
-```python
-{'192.168.1.50': 2, '45.33.12.9': 3}
+```
+Failed login attempts by IP (highest first):
+  45.33.12.9: 3
+  192.168.1.50: 2
 ```
 
 ## How it works
@@ -25,6 +27,7 @@ The script identifies every line containing a failed login, extracts the source 
 3. **Extract the source IP** using a regular expression (`\d+\.\d+\.\d+\.\d+`) that matches the shape of an IPv4 address, rather than relying on a fixed word position in the line.
 4. **Tally by IP** using a dictionary, incrementing a running count each time an IP reappears.
 5. **Return the result** from a reusable function, `count_failed_logins(filename)`, so it can be run against any log file, not just the sample data.
+6. **Sort and print a ranked summary** with `print_sorted_summary(counts)`, using `sorted()` with a `key` function to order IPs from most to least failed attempts, and f-strings for clean output formatting.
 
 ## Why regex instead of a fixed index
 
@@ -41,15 +44,14 @@ python log_parser.py
 By default it parses `auth.log` in the same directory. To use it on a different file:
 
 ```python
-from log_parser import count_failed_logins
+from log_parser import count_failed_logins, print_sorted_summary
 
 results = count_failed_logins("your_log_file.log")
-print(results)
+print_sorted_summary(results)
 ```
 
 ## Possible next steps
 
-- Sort and print results by count (highest first) to surface the most active offending IPs
 - Write results out to a CSV or JSON summary file
 - Add a command-line argument (`argparse`) to pass in the log filename instead of hardcoding it
 - Extend the regex to also capture timestamps, usernames, or ports for a fuller picture per attempt
