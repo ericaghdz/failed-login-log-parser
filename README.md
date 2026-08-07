@@ -1,4 +1,4 @@
-# Failed Login Log Parser using Python
+# Failed Login Log Parser
 
 A small Python tool that scans an authentication log for failed SSH login attempts and tallies them by source IP address — a simplified version of the kind of triage a SOC analyst does when scanning auth logs for brute-force activity.
 
@@ -50,11 +50,48 @@ results = count_failed_logins("your_log_file.log")
 print_sorted_summary(results)
 ```
 
+## Object-oriented version
+
+Alongside the dictionary-based tally, the project also includes an object-oriented approach using a `LoginAttempt` class:
+
+```python
+class LoginAttempt:
+    def __init__(self, ip, username, success):
+        self.ip = ip
+        self.username = username
+        self.success = success
+
+    def summary(self):
+        if self.success:
+            print(f"{self.username} logged in successfully from {self.ip}")
+        else:
+            print(f"Failed login for {self.username} from {self.ip}")
+```
+
+Instead of just tallying counts, `parse_failed_logins(filename)` builds a list of `LoginAttempt` objects — one per failed login — each holding its own `ip`, `username`, and `success` status, plus a `summary()` method that describes itself:
+
+```python
+attempts = parse_failed_logins("auth.log")
+for attempt in attempts:
+    attempt.summary()
+```
+
+```
+Failed login for admin from 192.168.1.50
+Failed login for root from 192.168.1.50
+Failed login for admin from 45.33.12.9
+Failed login for root from 45.33.12.9
+Failed login for test from 45.33.12.9
+```
+
+This approach trades the simplicity of the dictionary tally for more detail per attempt (username, not just IP) and room to grow — additional fields like timestamp or port could be added to `LoginAttempt` without changing how the rest of the code works.
+
 ## Possible next steps
 
 - Write results out to a CSV or JSON summary file
 - Add a command-line argument (`argparse`) to pass in the log filename instead of hardcoding it
-- Extend the regex to also capture timestamps, usernames, or ports for a fuller picture per attempt
+- Extend `LoginAttempt` to capture timestamp and port for a fuller picture per attempt
+- Add a class method to `LoginAttempt` (or a separate function) that summarizes a whole list of attempts, sorted by IP with the most failures
 
 ## Background
 

@@ -48,6 +48,57 @@ def print_sorted_summary(counts):
         print(f"  {ip}: {count}")
 
 
+class LoginAttempt:
+    """Represents a single login attempt parsed from a log line."""
+
+    def __init__(self, ip, username, success):
+        self.ip = ip
+        self.username = username
+        self.success = success
+
+    def summary(self):
+        """Prints a human-readable summary of this login attempt."""
+        if self.success:
+            print(f"{self.username} logged in successfully from {self.ip}")
+        else:
+            print(f"Failed login for {self.username} from {self.ip}")
+
+
+def parse_failed_logins(filename):
+    """
+    Reads a log file and builds a LoginAttempt object for each failed login.
+
+    Args:
+        filename (str): Path to the log file to parse.
+
+    Returns:
+        list[LoginAttempt]: One LoginAttempt per failed login line.
+    """
+    attempts = []
+
+    with open(filename) as file:
+        for line in file:
+            if "Failed password" in line:
+                words = line.split()
+                username = words[6]
+
+                match = re.search(r"\d+\.\d+\.\d+\.\d+", line)
+                ip = match.group()
+
+                attempt = LoginAttempt(ip, username, False)
+                attempts.append(attempt)
+
+    return attempts
+
+
 if __name__ == "__main__":
-    results = count_failed_logins("auth.log")
-    print_sorted_summary(results)
+    # Dictionary-based approach: quick tally sorted by count
+    counts = count_failed_logins("auth.log")
+    print_sorted_summary(counts)
+
+    print()
+
+    # Object-oriented approach: each attempt as its own LoginAttempt object
+    attempts = parse_failed_logins("auth.log")
+    for attempt in attempts:
+        attempt.summary()
